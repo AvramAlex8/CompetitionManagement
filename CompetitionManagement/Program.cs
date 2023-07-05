@@ -1,7 +1,13 @@
+using CompetitionManagement.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<CompetitionManagementContext>(options =>
+    options.UseSqlServer(builder.Configuration
+    .GetConnectionString("CompetitionManagementConnectionString")));
 
 var app = builder.Build();
 
