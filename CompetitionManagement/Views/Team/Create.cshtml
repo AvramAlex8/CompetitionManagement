@@ -19,7 +19,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="AwardNumber" class="control-label"></label>
-                <input asp-for="AwardNumber" class="form-control" />
+                <input asp-for="AwardNumber" class="form-control" min="0" type="number" />
                 <span asp-validation-for="AwardNumber" class="text-danger"></span>
             </div>
             <div class="form-group">

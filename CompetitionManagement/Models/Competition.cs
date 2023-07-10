@@ -30,6 +30,8 @@ public partial class Competition
     [Column("TypeID")]
     public int? TypeId { get; set; }
 
+    public byte[]? Logo { get; set; }
+
     [InverseProperty("Competition")]
     public virtual ICollection<Game> Games { get; set; } = new List<Game>();
 

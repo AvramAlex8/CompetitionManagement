@@ -1,6 +1,7 @@
 ﻿using CompetitionManagement.Data;
 using CompetitionManagement.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace CompetitionManagement.Controllers
@@ -12,9 +13,38 @@ namespace CompetitionManagement.Controllers
         {
             _competitionManagementContext = competitionManagementContext;
         }
-        public IActionResult Index()
+        public IActionResult Index(string sortOrder)
         {
-            return View(_competitionManagementContext.Players.Include(p => p.Team).ToList());
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.AgeSortParm = sortOrder == "Age" ? "age_desc" : "Age";
+            ViewBag.TeamNameSortParm = sortOrder == "Team" ? "team_desc" : "Team";
+
+            var players = _competitionManagementContext.Players.AsQueryable();
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    players = players.Include(p => p.Team).OrderByDescending(p => p.LastName);
+                    break;
+                case "Age":
+                    players = players.Include(p => p.Team).OrderBy(p => p.Age);
+                    break;
+                case "age_desc":
+                    players = players.Include(p => p.Team).OrderByDescending(p => p.Age);
+                    break;
+                case "Team":
+                    players = players.Include(p => p.Team).OrderBy(p => p.Team.Name);
+                    break;
+                case "team_desc":
+                    players = players.Include(p => p.Team).OrderByDescending(p => p.Team.Name);
+                    break;
+                default:
+                    players = players.Include(p => p.Team).OrderBy(p => p.LastName);
+                    break;
+            }
+
+            return View(players.ToList());
+
         }
         public IActionResult Create()
         {

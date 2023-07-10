@@ -1,0 +1,62 @@
+﻿@model IEnumerable<CompetitionManagement.Models.Team>
+
+@{
+    ViewData["Title"] = "AddTeam";
+}
+
+@using (Html.BeginForm("AddTeam", "Competition", FormMethod.Post))
+{
+    <h1>Add teams to this competition.</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Name", "AddTeam", new { sortOrder = ViewBag.NameSortParm })
+                </th>
+                <th>
+                    @Html.ActionLink("Award Number", "AddTeam", new { sortOrder = ViewBag.AwardNumberSortParm })
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Motto)
+                </th>
+                <th>
+                    @Html.ActionLink("Created On", "AddTeam", new { sortOrder = ViewBag.CreatedOnSortParm })
+                </th>
+                <th class="text-center">
+                    Add to competition
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AwardNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Motto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedOn)
+                    </td>
+                    <td class="text-center">
+                        <input type="checkbox" name="selectedTeams" value="@item.Id" />
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-controller="Team" asp-route-id="@item.Id">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-primary"/>
+    </div>
+}

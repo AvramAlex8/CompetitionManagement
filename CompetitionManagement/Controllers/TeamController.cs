@@ -1,6 +1,7 @@
 ﻿using CompetitionManagement.Data;
 using CompetitionManagement.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace CompetitionManagement.Controllers
@@ -12,9 +13,40 @@ namespace CompetitionManagement.Controllers
         {
             _competitionManagementContext = competitionManagementContext;
         }
-        public IActionResult Index()
+        public IActionResult Index(string sortOrder)
         {
-            return View(_competitionManagementContext.Teams.ToList());
+            ViewBag.NameSortParm = sortOrder == "name_asc" ? "name_desc" : "name_asc";
+            ViewBag.AwardNumberSortParm = sortOrder == "awardnumber_asc" ? "awardnumber_desc" : "awardnumber_asc";
+            ViewBag.CreatedOnSortParm = sortOrder == "createdon_asc" ? "createdon_desc" : "createdon_asc";
+
+            var teams = _competitionManagementContext.Teams.AsQueryable();
+
+            switch (sortOrder)
+            {
+                case "name_asc":
+                    teams = teams.OrderBy(t => t.Name);
+                    break;
+                case "name_desc":
+                    teams = teams.OrderByDescending(t => t.Name);
+                    break;
+                case "awardnumber_asc":
+                    teams = teams.OrderBy(t => t.AwardNumber);
+                    break;
+                case "awardnumber_desc":
+                    teams = teams.OrderByDescending(t => t.AwardNumber);
+                    break;
+                case "createdon_asc":
+                    teams = teams.OrderBy(t => t.CreatedOn);
+                    break;
+                case "createdon_desc":
+                    teams = teams.OrderByDescending(t => t.CreatedOn);
+                    break;
+                default:
+                    teams = teams.OrderBy(t => t.Name);
+                    break;
+            }
+
+            return View(teams.ToList());
         }
         public IActionResult Create()
         {
@@ -23,10 +55,17 @@ namespace CompetitionManagement.Controllers
         [HttpPost]
         public IActionResult Create(Team team)
         {
+            if (_competitionManagementContext.Teams.Any(t => t.Name == team.Name))
+            {
+                ModelState.AddModelError("Name", "There is already a team with the same name.");
+                return View(team);
+            }
+
             _competitionManagementContext.Teams.Add(team);
             _competitionManagementContext.SaveChanges();
             return RedirectToAction("Index");
         }
+
         public IActionResult Edit(int id)
         {
             Team team = _competitionManagementContext.Teams.Find(id);
@@ -36,6 +75,11 @@ namespace CompetitionManagement.Controllers
         public IActionResult Edit(Team team)
         {
             Team editedTeam = _competitionManagementContext.Teams.Find(team.Id);
+            if (_competitionManagementContext.Teams.Any(t => t.Name == team.Name) && editedTeam.Name != team.Name)
+            {
+                ModelState.AddModelError("Name", "There is already a team with the same name.");
+                return View(team);
+            }
             editedTeam.Name = team.Name;
             editedTeam.AwardNumber = team.AwardNumber;
             editedTeam.Motto = team.Motto;

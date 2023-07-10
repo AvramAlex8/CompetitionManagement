@@ -9,6 +9,7 @@
 <p>
     <a asp-action="Create">Create new player</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -16,13 +17,13 @@
                 @Html.DisplayNameFor(model => model.FirstName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                @Html.ActionLink("Last Name", "Index", new { sortOrder = ViewBag.NameSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Age)
+                @Html.ActionLink("Age", "Index", new { sortOrder = ViewBag.AgeSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team)
+                @Html.ActionLink("Team", "Index", new { sortOrder = ViewBag.TeamNameSortParm })
             </th>
             <th></th>
         </tr>
