@@ -1,0 +1,48 @@
+﻿@model IEnumerable<CompetitionManagement.Models.Game>
+
+@{
+    ViewData["Title"] = "Fixtures";
+}
+
+<h1>Fixtures</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Home team
+            </th>
+            <th>
+                Away team
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stadion)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                 <a asp-action="Details" asp-controller="Team" asp-route-id="@item.Team1.Id">@Html.DisplayFor(modelItem => item.Team1Name)</a>
+            </td>
+            <td>
+                    <a asp-action="Details" asp-controller="Team" asp-route-id="@item.Team2.Id">@Html.DisplayFor(modelItem => item.Team2Name)</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Stadion)
+            </td>
+            <td>
+                <a asp-action="AddScore" asp-route-homeTeamName="@item.Team1Name" asp-route-awayTeamName="@item.Team2Name" asp-route-id="@item.Id">Add score</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -32,6 +32,8 @@ public partial class Competition
 
     public byte[]? Logo { get; set; }
 
+    public bool Started { get; set; } = false;
+
     [InverseProperty("Competition")]
     public virtual ICollection<Game> Games { get; set; } = new List<Game>();
 

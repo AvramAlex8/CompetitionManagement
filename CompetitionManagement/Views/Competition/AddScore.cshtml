@@ -1,0 +1,42 @@
+﻿@model CompetitionManagement.Models.Game
+
+@{
+    ViewData["Title"] = "AddScore";
+}
+
+<h1>Set score</h1>
+
+<h4>Game</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddScore">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Team1Goals" class="control-label">@ViewBag.HomeTeamName</label>
+                <input asp-for="Team1Goals" class="form-control" min="0" type="number" required value="@(Model.Team1Goals == -1 ? 0 : Model.Team1Goals)" />
+                <span asp-validation-for="Team1Goals" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team2Goals" class="control-label">@ViewBag.AwayTeamName</label>
+                <input asp-for="Team2Goals" class="form-control" min="0" type="number" required value="@(Model.Team2Goals == -1 ? 0 : Model.Team2Goals)" />
+                <span asp-validation-for="Team2Goals" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

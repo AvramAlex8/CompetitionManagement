@@ -1,0 +1,78 @@
+﻿@model IEnumerable<CompetitionManagement.Models.Team>
+
+@{
+    ViewData["Title"] = "Standings";
+    int competitionId = ViewBag.CompetitionId;
+    Dictionary<Team, TeamCompetitionDetails> teamDetails = ViewBag.TeamDetails;
+    int rowNumber = 0;
+}
+
+<h1>Standings</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                #
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th class="text-center">
+                MP
+            </th>
+            <th class="text-center">
+                W
+            </th>
+            <th class="text-center">
+                D
+            </th>
+            <th class="text-center">
+                L
+            </th>
+            <th class="text-center">
+                G
+            </th>
+            <th class="text-center">
+                P
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+    rowNumber++;
+        <tr>
+            <td>
+                @rowNumber.
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+                <td class="text-center">
+                @Html.DisplayFor(modelItem => teamDetails[item].MatchesPlayed)
+            </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => teamDetails[item].Wins)
+            </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => teamDetails[item].Draws)
+            </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => teamDetails[item].Loses)
+            </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => teamDetails[item].GoalsScored) : @Html.DisplayFor(modelItem => teamDetails[item].GoalsConceded)
+            </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => teamDetails[item].Points)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<div>
+    <a asp-action="Results" asp-controller="Competition" asp-route-id="@competitionId">Results</a> |
+    <a asp-action="Fixtures" asp-controller="Competition" asp-route-id="@competitionId">Fixtures</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

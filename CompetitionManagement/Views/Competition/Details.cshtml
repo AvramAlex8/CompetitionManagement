@@ -57,7 +57,7 @@
                 @foreach (var team in Model.Teams)
                 {
                     <li>
-                        <a asp-action="Details" asp-controller="Team" asp-route-competitionId="@Model.Id" asp-route-id="@team.Id">@team.Name</a>
+                        <a asp-action="Details" asp-controller="Team" asp-route-id="@team.Id">@team.Name</a>
                     </li>
                 }
             </ul>
@@ -65,8 +65,26 @@
         }
     </dl>
 </div>
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="error-message">@ViewBag.ErrorMessage</div>
+}
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="AddTeam" asp-route-id="@Model?.Id">Add a team</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+    @if (Model?.Started == false)
+    {
+        <span class="separator">|</span>
+        <a asp-action="AddTeam" asp-route-id="@Model?.Id">Add a team</a>
+        <span class="separator">|</span>
+        <a asp-action="Start" asp-route-id="@Model?.Id">Start competition</a>
+    }
+    else
+    {
+        <span class="separator">|</span>
+        <a asp-action="Standings" asp-route-id="@Model?.Id">Standings</a>
+    }
+    <span class="separator">|</span>
     <a asp-action="Index">Back to List</a>
+
 </div>
+

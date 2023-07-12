@@ -19,10 +19,8 @@ public partial class Game
     [Column("Team2ID")]
     public int Team2Id { get; set; }
 
-    public int Team1Goals { get; set; }
-
-    public int Team2Goals { get; set; }
-
+    public int Team1Goals { get; set; } = -1;
+    public int Team2Goals { get; set; } = -1;
     [Column("CompetitionID")]
     public int CompetitionId { get; set; }
 
@@ -32,6 +30,12 @@ public partial class Game
     [StringLength(255)]
     [Unicode(false)]
     public string Stadion { get; set; } = null!;
+
+    [StringLength(100)]
+    public string? Team1Name { get; set; }
+
+    [StringLength(100)]
+    public string? Team2Name { get; set; }
 
     [ForeignKey("CompetitionId")]
     [InverseProperty("Games")]
