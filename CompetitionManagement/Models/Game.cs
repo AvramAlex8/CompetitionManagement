@@ -20,7 +20,9 @@ public partial class Game
     public int Team2Id { get; set; }
 
     public int Team1Goals { get; set; } = -1;
+
     public int Team2Goals { get; set; } = -1;
+
     [Column("CompetitionID")]
     public int CompetitionId { get; set; }
 

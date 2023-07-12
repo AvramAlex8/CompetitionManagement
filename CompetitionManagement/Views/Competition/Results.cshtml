@@ -45,9 +45,6 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Stadion)
             </td>
-            <td>
-                <a asp-action="AddScore" asp-route-homeTeamName="@item.Team1Name" asp-route-awayTeamName="@item.Team2Name" asp-route-id="@item.Id">Add score</a>
-            </td>
         </tr>
 }
     </tbody>

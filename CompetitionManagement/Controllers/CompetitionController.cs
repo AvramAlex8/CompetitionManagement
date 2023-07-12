@@ -63,6 +63,15 @@ namespace CompetitionManagement.Controllers
                 ModelState.AddModelError("Name", "There is already a competition with the same name.");
                 return View(competition);
             }
+            competition.Logo = ConvertFileToByte(file);
+
+            _competitionManagementContext.Competitions.Add(competition);
+            _competitionManagementContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        private static byte[] ConvertFileToByte(IFormFile file)
+        {
             if (file != null)
             {
                 byte[] byteArray;
@@ -71,13 +80,11 @@ namespace CompetitionManagement.Controllers
                     file.CopyTo(memoryStream);
                     byteArray = memoryStream.ToArray();
                 }
-                competition.Logo = byteArray;
+                return byteArray;
             }
-
-            _competitionManagementContext.Competitions.Add(competition);
-            _competitionManagementContext.SaveChanges();
-            return RedirectToAction("Index");
+            return null;
         }
+
         public IActionResult Details(int id, string errorMessage)
         {
             ViewBag.ErrorMessage = errorMessage;
@@ -160,14 +167,14 @@ namespace CompetitionManagement.Controllers
                 string errorMessage = "You need at least 2 teams to start the competition.";
                 return RedirectToAction("Details", new { id, errorMessage });
             }
-            GenerateMatches(competition);
+            GenerateMatchesRoundRobin(competition);
             // TODO - generate matches based on competition type
             competition.Started = true;
             _competitionManagementContext.SaveChanges();
             return RedirectToAction("Standings", new { id });
         }
 
-        private void GenerateMatches(Competition competition)
+        private void GenerateMatchesRoundRobin(Competition competition)
         {
             int teamCount = competition.Teams.Count;
 

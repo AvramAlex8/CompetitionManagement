@@ -26,6 +26,8 @@ public partial class Team
     [Column(TypeName = "date")]
     public DateTime CreatedOn { get; set; }
 
+    public byte[]? Logo { get; set; }
+
     [InverseProperty("Team1")]
     public virtual ICollection<Game> GameTeam1s { get; set; } = new List<Game>();
 

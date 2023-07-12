@@ -53,17 +53,32 @@ namespace CompetitionManagement.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Team team)
+        public IActionResult Create(Team team, IFormFile file)
         {
             if (_competitionManagementContext.Teams.Any(t => t.Name == team.Name))
             {
                 ModelState.AddModelError("Name", "There is already a team with the same name.");
                 return View(team);
             }
+            team.Logo = ConvertFileToByte(file);
 
             _competitionManagementContext.Teams.Add(team);
             _competitionManagementContext.SaveChanges();
             return RedirectToAction("Index");
+        }
+        private static byte[] ConvertFileToByte(IFormFile file)
+        {
+            if (file != null)
+            {
+                byte[] byteArray;
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    file.CopyTo(memoryStream);
+                    byteArray = memoryStream.ToArray();
+                }
+                return byteArray;
+            }
+            return null;
         }
 
         public IActionResult Edit(int id)
