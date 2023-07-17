@@ -45,7 +45,6 @@ public partial class CompetitionManagementContext : DbContext
                         .HasConstraintName("FK_TeamCompetition_TeamID"),
                     l => l.HasOne<Competition>().WithMany()
                         .HasForeignKey("CompetitionId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_TeamCompetition_CompetitionID"),
                     j =>
                     {
@@ -63,9 +62,7 @@ public partial class CompetitionManagementContext : DbContext
 
         modelBuilder.Entity<Game>(entity =>
         {
-            entity.HasOne(d => d.Competition).WithMany(p => p.Games)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Game_Competition");
+            entity.HasOne(d => d.Competition).WithMany(p => p.Games).HasConstraintName("FK_Game_Competition");
 
             entity.HasOne(d => d.Team1).WithMany(p => p.GameTeam1s)
                 .OnDelete(DeleteBehavior.ClientSetNull)

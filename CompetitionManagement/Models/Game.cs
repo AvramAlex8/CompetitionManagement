@@ -39,6 +39,8 @@ public partial class Game
     [StringLength(100)]
     public string? Team2Name { get; set; }
 
+    public int? Round { get; set; }
+
     [ForeignKey("CompetitionId")]
     [InverseProperty("Games")]
     public virtual Competition Competition { get; set; } = null!;

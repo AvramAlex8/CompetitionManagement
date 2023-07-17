@@ -6,46 +6,45 @@
 
 <h1>Results</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Home team
-            </th>
-            <th>
-                Away team
-            </th>
-            <th>
-                Score
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stadion)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                 <a asp-action="Details" asp-controller="Team" asp-route-id="@item.Team1.Id">@Html.DisplayFor(modelItem => item.Team1Name)</a>
-            </td>
-            <td>
-                    <a asp-action="Details" asp-controller="Team" asp-route-id="@item.Team2.Id">@Html.DisplayFor(modelItem => item.Team2Name)</a>
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.Team1Goals) - @Html.DisplayFor(modelItem => item.Team2Goals)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Stadion)
-            </td>
-        </tr>
+@foreach (var group in Model.GroupBy(g => g.Date.Date))
+{
+    <h3>@group.Key.ToString("dd/MM/yyyy"), Matchday @group.First().Round</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Home team
+                </th>
+                <th>
+                    Away team
+                </th>
+                <th>
+                    Score
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Stadion)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in group)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Details" asp-controller="Team" asp-route-id="@item.Team1.Id">@Html.DisplayFor(modelItem => item.Team1Name)</a>
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-controller="Team" asp-route-id="@item.Team2.Id">@Html.DisplayFor(modelItem => item.Team2Name)</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Team1Goals) - @Html.DisplayFor(modelItem => item.Team2Goals)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Stadion)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
-    </tbody>
-</table>

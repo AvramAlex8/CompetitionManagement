@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -16,3 +16,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.navbar-nav .nav-item.selected {
+    background-color: lightgray;
+}
+
