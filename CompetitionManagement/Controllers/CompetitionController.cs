@@ -18,37 +18,9 @@ namespace CompetitionManagement.Controllers
         }
         public IActionResult Index(string sortOrder)
         {
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.StartDateSortParm = sortOrder == "StartDate" ? "startdate_desc" : "StartDate";
-            ViewBag.EndDateSortParm = sortOrder == "EndDate" ? "enddate_desc" : "EndDate";
-            ViewBag.LocationSortParm = sortOrder == "Location" ? "location_desc" : "Location";
-            ViewBag.TypeSortParm = sortOrder == "Type" ? "type_desc" : "Type";
-
             var competitions = _competitionManagementContext.Competitions.AsQueryable();
 
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    competitions = competitions.Include(c => c.Type).OrderBy(c => c.Name);
-                    break;
-                case "startdate_desc":
-                    competitions = competitions.Include(c => c.Type).OrderByDescending(c => c.StartDate);
-                    break;
-                case "enddate_desc":
-                    competitions = competitions.Include(c => c.Type).OrderByDescending(c => c.EndDate);
-                    break;
-                case "location_desc":
-                    competitions = competitions.Include(c => c.Type).OrderByDescending(c => c.Location);
-                    break;
-                case "type_desc":
-                    competitions = competitions.Include(c => c.Type).OrderByDescending(c => c.Type);
-                    break;
-                default:
-                    competitions = competitions.Include(c => c.Type).OrderBy(c => c.Name);
-                    break;
-            }
-
-            return View(competitions.ToList());
+            return View(competitions.Include(c => c.Type).ToList());
         }
         public IActionResult Create()
         {
@@ -312,10 +284,23 @@ namespace CompetitionManagement.Controllers
                 teams.Add(team);
             }
             List<Game> games = _competitionManagementContext.Games.Where(g => g.CompetitionId == competition.Id).ToList();
+            Dictionary<Team, TeamCompetitionDetails> teamDetails = GetTeamDetails(competition);
+            ViewBag.TeamDetails = teamDetails;
+            teams = teams.OrderByDescending(t => teamDetails[t].Points)
+                .ThenBy(t => teamDetails[t].GoalsScored)
+                .ThenBy(t => teamDetails[t].GoalsScored - teamDetails[t].GoalsConceded).ToList();
 
+            ViewBag.WinnerTeamId = teams.First().Id;
+            ViewBag.CompetitionId = id;
+            return View(teams);
+        }
+
+        private Dictionary<Team, TeamCompetitionDetails> GetTeamDetails(Competition competition)
+        {
             Dictionary<Team, TeamCompetitionDetails> teamDetails = new Dictionary<Team, TeamCompetitionDetails>();
-
-            foreach (Team team in teams)
+            List<Team> teams = new List<Team>();
+            List<Game> games = _competitionManagementContext.Games.Where(g => g.CompetitionId == competition.Id).ToList();
+            foreach (Team team in competition.Teams)
             {
                 int points = 0;
                 int matches = 0;
@@ -383,23 +368,17 @@ namespace CompetitionManagement.Controllers
                     GoalsConceded = goalsConceded,
                     Points = points
                 };
-                ViewBag.TeamDetails = teamDetails;
             }
-            teams = teams.OrderByDescending(t => teamDetails[t].Points)
-                .ThenBy(t => teamDetails[t].GoalsScored)
-                .ThenBy(t => teamDetails[t].GoalsScored - teamDetails[t].GoalsConceded).ToList();
-
-            ViewBag.WinnerTeamId = teams.First().Id;
-            ViewBag.CompetitionId = id;
-            return View(teams);
+            return teamDetails;
         }
 
         public IActionResult Fixtures(int id, int winnerTeamId)
         {
             Competition competition = _competitionManagementContext.Competitions.Include(c => c.Games).Include(c => c.Teams).FirstOrDefault(c => id == c.Id);
-            List<Game> games = GetGamesFromCompetition(competition);
-            games = GetRoundsForGames(competition, games);
+            Dictionary<Team, TeamCompetitionDetails> teamDetails = GetTeamDetails(competition);
+            List<Game> games = _competitionManagementContext.Games.Where(g => g.CompetitionId == competition.Id).ToList();
             games = games.Where(g => g.Team1Goals == -1).Where(g => g.Team1Name != g.Team2Name).ToList();
+            games = GetRoundsForGames(games, teamDetails);
             if (games.Count == 0)
             {
                 if (competition.TypeId == 1 || competition.TypeId == 2)
@@ -414,7 +393,7 @@ namespace CompetitionManagement.Controllers
                         return RedirectToAction("Winner", "Competition", new { competitionId = competition.Id, winnerTeamId = winnerTeams.First().Id });
                     }
                     games = GenerateMatchesSimpleKnockout(competition, winnerTeams);
-                    games = GetRoundsForGames(competition, games);
+                    games = GetRoundsForGames(games, teamDetails);
                     games = games.Where(g => g.Team2 != g.Team1).ToList();
                     _competitionManagementContext.SaveChanges();
                 }
@@ -430,7 +409,7 @@ namespace CompetitionManagement.Controllers
                         return RedirectToAction("Winner", "Competition", new { competitionId = competition.Id, winnerTeamId = winnerTeams.First().Id });
                     }
                     games = GenerateMatchesSimpleKnockout(competition, winnerTeams);
-                    games = GetRoundsForGames(competition, games);
+                    games = GetRoundsForGames(games, teamDetails);
                     games = games.Where(g => g.Team2 != g.Team1).ToList();
                     _competitionManagementContext.SaveChanges();
                 }
@@ -438,25 +417,13 @@ namespace CompetitionManagement.Controllers
             return View(games);
         }
 
-        private List<Game> GetRoundsForGames(Competition competition, List<Game> games)
+        private List<Game> GetRoundsForGames(List<Game> games, Dictionary<Team, TeamCompetitionDetails> teamDetails)
         {
-            int actualRound = 0;
-            if (games.Any())
-            {
-                actualRound = competition.Games
-                    .Where(g => g.Team1Goals != -1 && games.Any())
-                    .Where(g => g.Date != games.First().Date)
-                    .Max(g => g.Round)
-                    .GetValueOrDefault() + 1;
-            }
             foreach (var group in games.GroupBy(g => g.Date.Date))
             {
                 foreach (Game game in group)
                 {
-                    if (game.Date == competition.Games.Max(g => g.Date))
-                    {
-                        game.Round = actualRound;
-                    }
+                    game.Round = Math.Max(teamDetails[game.Team1].MatchesPlayed, teamDetails[game.Team2].MatchesPlayed) + 1;
                 }
             }
             _competitionManagementContext.SaveChanges();
@@ -493,11 +460,6 @@ namespace CompetitionManagement.Controllers
             }
         }
 
-        private List<Game> GetGamesFromCompetition(Competition competition)
-        {
-            return _competitionManagementContext.Games.Where(g => g.CompetitionId == competition.Id).ToList();
-        }
-
         public IActionResult AddScore(int id, string homeTeamName, string awayTeamName)
         {
             ViewBag.HomeTeamName = homeTeamName;
@@ -517,18 +479,14 @@ namespace CompetitionManagement.Controllers
         public IActionResult Results(int id)
         {
             Competition competition = _competitionManagementContext.Competitions.Include(c => c.Games).Include(c => c.Teams).FirstOrDefault(c => c.Id == id);
-            List<Game> games = GetGamesFromCompetition(competition);
+            List<Game> games = _competitionManagementContext.Games.Where(g => g.CompetitionId == competition.Id).ToList();
             games = games.Where(g => g.Team1Goals != -1).Where(g => g.Team2 != g.Team1).ToList();
             return View(games);
         }
         public IActionResult Winner(int competitionId, int winnerTeamId)
         {
             Competition competition = _competitionManagementContext.Competitions.Find(competitionId);
-            if (competition.TypeId == 1 || competition.TypeId == 2)
-            {
-                return View(_competitionManagementContext.Teams.Find(winnerTeamId));
-            }
-            return View(new Team());
+            return View(_competitionManagementContext.Teams.Find(winnerTeamId));
         }
     }
 }

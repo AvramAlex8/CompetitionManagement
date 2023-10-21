@@ -7,53 +7,61 @@
 <h1>List of all competitions</h1>
 
 <p>
-    <a asp-action="Create">Create new competition</a>
+    <a asp-action="Create">
+        <img src="~/Resources/Create.png" alt="Edit" title="Create new competition" style="width: 40px;height: 40px; margin-bottom:20px" />
+    </a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParm })
-            </th>
-            <th>
-                @Html.ActionLink("Start date", "Index", new { sortOrder = ViewBag.StartDateSortParm })
-            </th>
-            <th>
-                @Html.ActionLink("End date", "Index", new { sortOrder = ViewBag.EndDateSortParm })
-            </th>
-            <th>
-                @Html.ActionLink("Location", "Index", new { sortOrder = ViewBag.LocationSortParm })
-            </th>
-            <th>
-                @Html.ActionLink("Type", "Index", new { sortOrder = ViewBag.TypeSortParm })
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @item.StartDate.ToString("dd-MM-yyyy")
-            </td>
-            <td>
-                @item.EndDate.ToString("dd-MM-yyyy")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="boardcard-container">
+    @foreach (var item in Model)
+    {
+        <div class="boardcard">
+            <div style="text-align: center;">
+                <span style="display: inline-block; font-size: 18px">
+                    @item.Name
+                    @if (item.Logo != null)
+                    {
+                        <img src="data:image;base64,@Convert.ToBase64String(item.Logo)" alt="Logo" style="height: 30px; margin-left: 10px;" />
+                    }
+                </span>
+            </div>
+            <div class="boardcard-details">
+                <p><strong style="font-size: 14px">Start date:</strong> @item.StartDate.ToString("dd-MM-yyyy")</p>
+                <p><strong style="font-size: 14px">End date:</strong> @item.EndDate.ToString("dd-MM-yyyy")</p>
+                <p><strong style="font-size: 14px">Location:</strong> @Html.DisplayFor(modelItem => item.Location)</p>
+                <p><strong style="font-size: 14px">Type:</strong> @Html.DisplayFor(modelItem => item.Type.Name)</p>
+                <div class="boardcard-actions">
+                    @if (!item.Started)
+                    {
+                        <a asp-action="AddTeam" asp-route-id="@item.Id" class="circle-link" title="Add a team to competition">
+                            <img src="~/Resources/AddTeam.png" alt="AddTeam" class="circle-image" />
+                        </a>
+                        <a asp-action="AddTeam" asp-route-id="@item.Id" class="circle-link" title="Remove a team from competition">
+                            <img src="~/Resources/RemoveTeam.png" alt="RemoveTeam" class="circle-image" />
+                        </a>
+                        <a asp-action="Start" asp-route-id="@item.Id" class="circle-link" title="Start competition">
+                            <img src="~/Resources/Start.png" alt="Start" class="circle-image" />
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="circle-link" title="Delete competition">
+                            <img src="~/Resources/Delete.png" alt="Delete" class="circle-image" />
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Results" asp-route-id="@item.Id" class="circle-link" title="Results">
+                            <img src="~/Resources/Results.png" alt="Results" class="circle-image" />
+                        </a>
+                        <a asp-action="Standings" asp-route-id="@item.Id" class="circle-link" title="Standings">
+                            <img src="~/Resources/Standings.png" alt="Standings" class="circle-image" />
+                        </a>
+                        <a asp-action="Fixtures" asp-route-id="@item.Id" class="circle-link" title="Fixtures">
+                            <img src="~/Resources/Fixtures.png" alt="Fixtures" class="circle-image" />
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+

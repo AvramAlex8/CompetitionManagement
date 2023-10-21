@@ -8,7 +8,7 @@
 
 @foreach (var group in Model.GroupBy(g => g.Date.Date))
 {
-    <h3>@group.Key.ToString("dd/MM/yyyy"), Matchday @group.First().Round</h3>
+    <h3>@group.Key.ToString("dd/MM/yyyy")</h3>
     <table class="table">
         <thead>
             <tr>

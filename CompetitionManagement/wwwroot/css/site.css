@@ -18,6 +18,68 @@ body {
 }
 
 .navbar-nav .nav-item.selected {
-    background-color: lightgray;
+    background-color: #4ce600;
+    border-radius:4rem;
 }
 
+.boardcard-container {
+    display: flex;
+    flex-direction:row;
+    flex-wrap:wrap;
+}
+
+.boardcard-container:hover {
+    align-items:flex-start
+}
+
+.boardcard {
+    width: 300px;
+    margin: 10px;
+    border: 2px solid #005C46;
+    padding: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+
+}
+.boardcard h3,
+.boardcard p {
+  overflow: hidden;
+  white-space: nowrap; 
+  text-overflow: ellipsis; 
+}
+
+.boardcard:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s;
+}
+
+.circle-link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: green;
+    margin-right: 10px;
+    border: 2px solid black;
+}
+
+.circle-image {
+    max-width: 70%; 
+    max-height: 70%;
+    display: block;
+}
+
+.circle-link:hover {
+    background-color: #4ce600;
+}
+
+
+.boardcard-details {
+    display: none;
+}
+
+.boardcard:hover .boardcard-details {
+    display: block;
+}

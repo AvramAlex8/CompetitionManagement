@@ -36,13 +36,13 @@
                 <label asp-for="Type" class="control-label"></label>
                 <select asp-for="TypeId" class="form-control" asp-items="@(new SelectList(ViewBag.CompetitionTypes, "Id", "Name"))"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-top: 10px">
                 <label asp-for="Logo" class="control-label"></label>
                 <input type="file" asp-for="Logo" class="form-control-file" name="file"/>
                 <span asp-validation-for="Logo" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="margin-top: 10px">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
